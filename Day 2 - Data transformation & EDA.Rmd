@@ -1,0 +1,188 @@
+---
+title: "Day 2"
+output: html_notebook
+---
+
+## 1. Data transformation: Fligths dataset
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(nycflights13)
+```
+
+
+```{r}
+filter(flights, month == 1, day == 1)
+
+```
+
+
+```{r}
+jan1 <- filter(flights, month == 1, day == 1)
+```
+
+
+```{r}
+filter(flights, month == 11 | month == 12)
+```
+
+
+```{r}
+arrange(flights, year, month, day)
+
+```
+
+
+```{r}
+arrange(flights, desc(dep_delay))
+```
+
+
+```{r}
+flights_sml <- select(flights, 
+  year:day, 
+  ends_with("delay"), 
+  distance, 
+  air_time
+)
+mutate(flights_sml,
+  gain = dep_delay - arr_delay,
+  speed = distance / air_time * 60
+)
+```
+
+```{r}
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+
+
+average delay for each month
+
+```{r}
+flights %>%
+  group_by(month)%>%
+  summarise(
+    total_average_delay = mean(dep_delay, na.rm = TRUE)+ mean(arr_delay, na.rm = TRUE))%>%
+  arrange(desc(total_average_delay))
+   
+```
+
+
+what years do we have in this dataset?
+
+```{r}
+flights %>%
+  count(year)
+```
+
+
+
+
+```{r}
+flights %>%
+   group_by(dest) %>%
+   summarise(count = n())%>%
+   arrange(desc(count))
+```
+
+trying pie chart
+
+```{r}
+flights %>%
+   group_by(origin) %>%
+   summarise(count = n())%>%
+   arrange(desc(count)) %>%
+   ggplot(aes(x ="", y = count, fill = origin))+
+   geom_bar(stat = "identity", width = 1)+
+   coord_polar("y", start =0)+
+   theme_void()
+
+
+```
+
+
+
+## 2. Exploratoy Data Analysis: Diamonds dataset
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut))
+```
+
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = carat), binwidth = 0.5)
+```
+
+```{r}
+smaller <- diamonds %>% 
+  filter(carat < 3)
+  
+ggplot(data = smaller, mapping = aes(x = carat)) +
+  geom_histogram(binwidth = 0.1)
+```
+
+```{r}
+ggplot(data = smaller, mapping = aes(x = carat, colour = cut)) +
+  geom_freqpoly(binwidth = 0.1)
+```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
+  geom_boxplot()
+```
+
+```{r}
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = carat, y = price))
+```
+
+
+
+```{r}
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = carat, y = price), alpha = 1/10)+
+  facet_wrap(cut ~ .)
+```
+
+
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = carat, y = price, colour = color, legend.show = FALSE)) +
+  geom_point( alpha = 1/5)+
+  facet_wrap(color ~ .)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
